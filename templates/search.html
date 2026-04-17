@@ -1,0 +1,68 @@
+{% extends "base_new.html" %}
+
+{% block content %}
+
+<!-- Search Bar -->
+<div class="search-box">
+    <form action="/search" method="GET">
+        <input type="text" name="q" placeholder="Search users or posts..." value="{{ query or '' }}">
+    </form>
+</div>
+
+{% if query %}
+    <!-- Users Results -->
+    {% if users %}
+    <div style="padding:15px 20px;border-bottom:1px solid #efefef;">
+        <h3 style="font-size:14px;color:#8e8e8e;text-transform:uppercase;">Users</h3>
+    </div>
+    {% for u in users %}
+    <a href="/profile?user={{ u[0] }}" class="message-item">
+        <div class="message-avatar">{{ u[0][0]|upper }}</div>
+        <div class="message-content">
+            <div class="message-username">{{ u[0] }}</div>
+            {% if u[2] %}
+            <div class="message-preview">{{ u[2] }}</div>
+            {% endif %}
+        </div>
+    </a>
+    {% endfor %}
+    {% endif %}
+
+    <!-- Posts Results -->
+    {% if posts %}
+    <div style="padding:15px 20px;border-bottom:1px solid #efefef;">
+        <h3 style="font-size:14px;color:#8e8e8e;text-transform:uppercase;">Posts</h3>
+    </div>
+    {% for post in posts %}
+    <div class="card">
+        <div class="card-header">
+            <a href="/profile?user={{ post[1] }}" class="avatar">{{ post[1][0]|upper }}</a>
+            <a href="/profile?user={{ post[1] }}" class="username">{{ post[1] }}</a>
+        </div>
+        {% if post[3] %}
+        <img src="{{ url_for('static', filename=post[3].split(',')[0]) }}" class="post-image" alt="Post">
+        {% endif %}
+        <div class="post-title">{{ post[2] }}</div>
+        <div class="post-content">{{ post[4] }}</div>
+        <div class="card-actions">
+            <span>{{ post[6] or 0 }} likes</span>
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if not users and not posts %}
+    <div class="empty-state">
+        <h3>No results found</h3>
+        <p>Try searching for something else</p>
+    </div>
+    {% endif %}
+
+{% else %}
+<div class="empty-state">
+    <h3>Search</h3>
+    <p>Find users and posts</p>
+</div>
+{% endif %}
+
+{% endblock %}

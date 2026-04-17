@@ -1,0 +1,92 @@
+{% extends "base_new.html" %}
+
+{% block content %}
+
+<h2 style="text-align:center;padding:20px;font-size:20px;font-weight:600;">Create New Post</h2>
+
+<form method="POST" enctype="multipart/form-data">
+
+    <!-- Category -->
+    <div class="form-group">
+        <label>Category</label>
+        <select name="category">
+            <option value="experience">Rental Experience</option>
+            <option value="rent">Room for Rent</option>
+            <option value="roommate">Looking for Roommate</option>
+            <option value="other">Other</option>
+        </select>
+    </div>
+
+    <!-- Title -->
+    <div class="form-group">
+        <label>Title</label>
+        <input type="text" name="title" placeholder="e.g., Great apartment near UCSD!" required>
+    </div>
+
+    <!-- Content -->
+    <div class="form-group">
+        <label>Content</label>
+        <textarea name="content" placeholder="Share your rental experience, room info, or find roommates..." required></textarea>
+    </div>
+
+    <!-- Image Upload -->
+    <div class="form-group">
+        <label>Upload Photos (multiple allowed)</label>
+        <div style="border:2px dashed #dbdbdb;border-radius:12px;padding:30px;text-align:center;cursor:pointer;"
+             onclick="document.getElementById('images').click()">
+            <input type="file" name="images" id="images" multiple accept="image/*" style="display:none;"
+                   onchange="handleFileSelect(event)">
+            <div style="font-size:40px;margin-bottom:10px;">📷</div>
+            <div style="color:#8e8e8e;">Click to select photos</div>
+            <div style="color:#8e8e8e;font-size:12px;margin-top:5px;">Supports JPG, PNG</div>
+        </div>
+    </div>
+
+    <!-- Image Preview -->
+    <div id="preview-container" style="display:none;padding:0 20px;">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;" id="preview-images"></div>
+        <button type="button" onclick="clearImages()" style="width:auto;padding:8px 16px;margin-top:10px;background:#ff4757;">
+            Clear All
+        </button>
+    </div>
+
+    <button type="submit" class="btn-primary">Post</button>
+
+</form>
+
+<script>
+function handleFileSelect(event) {
+    const files = event.target.files;
+    const previewContainer = document.getElementById('preview-container');
+    const previewImages = document.getElementById('preview-images');
+
+    previewImages.innerHTML = '';
+
+    if (files.length > 0) {
+        previewContainer.style.display = 'block';
+    }
+
+    for (let i = 0; i < files.length; i++) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const div = document.createElement('div');
+            div.style.cssText = 'width:80px;height:80px;position:relative;border-radius:8px;overflow:hidden;';
+            div.innerHTML = `
+                <img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">
+                <button type="button" onclick="removeImage(this, ${i})"
+                        style="position:absolute;top:2px;right:2px;width:20px;height:20px;background:rgba(0,0,0,0.7);color:white;border:none;border-radius:50%;cursor:pointer;font-size:12px;">×</button>
+            `;
+            previewImages.appendChild(div);
+        };
+        reader.readAsDataURL(files[i]);
+    }
+}
+
+function clearImages() {
+    document.getElementById('images').value = '';
+    document.getElementById('preview-container').style.display = 'none';
+    document.getElementById('preview-images').innerHTML = '';
+}
+</script>
+
+{% endblock %}

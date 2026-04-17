@@ -1,0 +1,41 @@
+{% extends "base_new.html" %}
+
+{% block content %}
+
+<!-- Chat Header -->
+<div class="chat-header">
+    <a href="/messages" class="chat-back">←</a>
+    <span class="chat-with">{{ friend }}</span>
+</div>
+
+<!-- Chat Messages -->
+<div class="chat-messages">
+    {% for msg in msgs %}
+    <div class="chat-message {% if msg[0] == session['user'] %}sent{% else %}received{% endif %}">
+        {% if msg[2] %}
+        <img src="{{ url_for('static', filename=msg[2]) }}" alt="Image">
+        {% endif %}
+        {% if msg[1] %}
+        {{ msg[1] }}
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    {% if not msgs %}
+    <div class="empty-state" style="padding:40px 20px;">
+        <p>No messages yet. Say hello!</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Chat Input -->
+<form class="chat-input" method="POST" enctype="multipart/form-data">
+    <input type="text" name="content" placeholder="Message..." autocomplete="off">
+    <input type="file" name="image" accept="image/*" style="display:none;" id="chat-image-input"
+           onchange="this.form.submit()">
+    <button type="button" onclick="document.getElementById('chat-image-input').click()"
+            style="background:none;border:none;cursor:pointer;font-size:24px;">📷</button>
+    <button type="submit" style="background:none;border:none;cursor:pointer;font-size:24px;color:#0095f6;">➤</button>
+</form>
+
+{% endblock %}

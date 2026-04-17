@@ -1,0 +1,29 @@
+{% extends "base_new.html" %}
+
+{% block content %}
+
+<h2 style="padding:20px;font-size:18px;font-weight:600;">Messages</h2>
+
+{% if conversations %}
+    {% for conv in conversations %}
+    <a href="/chat/{{ conv[0] }}" class="message-item">
+        <div class="message-avatar">{{ conv[0][0]|upper }}</div>
+        <div class="message-content">
+            <div class="message-username">{{ conv[0] }}</div>
+            <div class="message-preview">
+                {% if conv[1] %}{{ conv[1][:30] }}{% if conv[1]|length > 30 %}...{% endif %}{% else %}No messages{% endif %}
+            </div>
+        </div>
+        {% if conv[3] and conv[3] > 0 %}
+        <span class="unread-badge">{{ conv[3] }}</span>
+        {% endif %}
+    </a>
+    {% endfor %}
+{% else %}
+<div class="empty-state">
+    <h3>No messages yet</h3>
+    <p>Start a conversation by visiting someone's profile</p>
+</div>
+{% endif %}
+
+{% endblock %}

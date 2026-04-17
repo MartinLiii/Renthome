@@ -1,0 +1,41 @@
+{% extends "base_new.html" %}
+
+{% block content %}
+
+<div style="max-width:350px;margin:40px auto;">
+
+    <div class="card" style="padding:30px 20px;text-align:center;">
+
+        <h1 style="font-size:28px;margin-bottom:30px;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+            RentHome
+        </h1>
+
+        <form method="POST">
+            <input type="text" name="username" placeholder="Username" required style="margin-bottom:10px;">
+            <input type="password" name="password" placeholder="Password" required style="margin-bottom:10px;">
+
+            <button type="submit" class="btn-primary" style="margin:10px 0 20px;">Log in</button>
+        </form>
+
+        <div style="display:flex;align-items:center;gap:15px;margin-bottom:20px;">
+            <div style="flex:1;height:1px;background:#dbdbdb;"></div>
+            <span style="color:#8e8e8e;font-size:12px;">OR</span>
+            <div style="flex:1;height:1px;background:#dbdbdb;"></div>
+        </div>
+
+        <a href="#" style="color:#385185;font-size:14px;text-decoration:none;font-weight:600;">
+            Log in with Facebook
+        </a>
+
+    </div>
+
+    <div class="card" style="padding:20px;text-align:center;margin-top:10px;">
+        <span style="color:#262626;">Don't have an account?</span>
+        <a href="{{ url_for('register') }}" style="color:#0095f6;text-decoration:none;font-weight:600;">
+            Sign up
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}
