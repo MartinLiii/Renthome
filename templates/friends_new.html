@@ -1,0 +1,29 @@
+{% extends "base_new.html" %}
+{% block content %}
+<h2 style="padding:20px;font-size:18px;font-weight:600;">Friends</h2>
+
+<form method="POST" style="padding:0 20px 20px;">
+    <div style="display:flex;gap:10px;">
+        <input name="friend" placeholder="Username to add" style="flex:1;">
+        <button type="submit" style="width:auto;padding:10px 20px;">Add</button>
+    </div>
+</form>
+
+{% if friends %}
+    {% for f in friends %}
+    <a href="/chat/{{ f[0] }}" class="message-item">
+        <div class="message-avatar">{{ f[0][0]|upper }}</div>
+        <div class="message-content">
+            <div class="message-username">{{ f[0] }}</div>
+        </div>
+        <span style="color:#0095f6;">Chat</span>
+    </a>
+    {% endfor %}
+{% else %}
+<div class="empty-state">
+    <h3>No friends yet</h3>
+    <p>Add friends to start chatting</p>
+</div>
+{% endif %}
+
+{% endblock %}

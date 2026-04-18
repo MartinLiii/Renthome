@@ -1,0 +1,113 @@
+{% extends "base_new.html" %}
+
+{% block content %}
+
+<!-- Profile Header -->
+<div class="profile-header">
+    <div class="profile-avatar">
+        {{ user[0]|upper }}
+    </div>
+    <div class="profile-info">
+        <div class="profile-name">{{ user }}</div>
+        <div class="profile-stats">
+            <div>
+                <strong>{{ posts|length }}</strong>
+                <span>posts</span>
+            </div>
+            <div>
+                <strong>{{ followers_count }}</strong>
+                <span>followers</span>
+            </div>
+            <div>
+                <strong>{{ following_count }}</strong>
+                <span>following</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bio -->
+{% if user_info and user_info[2] %}
+<div class="profile-bio">
+    {{ user_info[2] }}
+</div>
+{% endif %}
+
+<!-- Action Buttons -->
+{% if session.get('user') and session['user'] != user %}
+<div class="profile-actions">
+    <button class="btn-primary {% if is_following %}btn-secondary{% endif %}"
+            id="follow-btn"
+            onclick="toggleFollow('{{ user }}')">
+        {% if is_following %}Following{% else %}Follow{% endif %}
+    </button>
+    <button class="btn-primary btn-secondary" onclick="location.href='/chat/{{ user }}'">Message</button>
+</div>
+{% elif not session.get('user') %}
+<div class="profile-actions">
+    <a href="/login" class="btn-primary" style="text-decoration:none;display:block;text-align:center;">Login to follow</a>
+</div>
+{% endif %}
+
+<!-- Tab Navigation -->
+<div style="display:flex;border-top:1px solid #dbdbdb;margin-top:10px;">
+    <a href="/profile?user={{ user }}" style="flex:1;text-align:center;padding:12px;color:#262626;text-decoration:none;font-size:12px;font-weight:600;letter-spacing:1px;">
+        POSTS
+    </a>
+</div>
+
+<!-- Posts Grid -->
+{% if posts %}
+<div class="grid-3">
+    {% for post in posts %}
+    <div style="position:relative;cursor:pointer;" onclick="location.href='/#post-{{ post[0] }}'">
+        {% if post[3] %}
+        <img src="{{ url_for('static', filename=post[3].split(',')[0]) }}" class="post-image" alt="Post">
+        {% else %}
+        <div class="post-image" style="background:#efefef;display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:24px;">📝</span>
+        </div>
+        {% endif %}
+        <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);color:white;padding:4px 8px;font-size:12px;display:flex;justify-content:space-around;">
+            <span>❤️ {{ post[4] or 0 }}</span>
+            <span>💬 {{ post[6] or 0 }}</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <h3>No posts yet</h3>
+    <p>Share your rental experience here!</p>
+</div>
+{% endif %}
+
+<script>
+function toggleFollow(username) {
+    fetch('/follow/' + username, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'}
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            const btn = document.getElementById('follow-btn');
+            if (data.action === 'followed') {
+                btn.textContent = 'Following';
+                btn.classList.remove('btn-secondary');
+            } else {
+                btn.textContent = 'Follow';
+                btn.classList.add('btn-secondary');
+            }
+
+            // Update followers count
+            const stats = document.querySelector('.profile-stats');
+            stats.innerHTML = stats.innerHTML.replace(/<strong>(\d+)<\/strong>/, function(match, num) {
+                return '<strong>' + data.followers_count + '</strong>';
+            });
+        }
+    });
+}
+</script>
+
+{% endblock %}

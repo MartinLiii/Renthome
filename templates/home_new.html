@@ -1,0 +1,162 @@
+{% extends "base_new.html" %}
+
+{% block content %}
+
+<!-- Category Filter -->
+<div style="display:flex;gap:10px;padding:0 20px 15px;overflow-x:auto;">
+    <a href="/" style="padding:6px 16px;background:#0095f6;color:white;border-radius:20px;text-decoration:none;font-size:13px;font-weight:600;">All</a>
+    <a href="/?category=experience" style="padding:6px 16px;background:white;border:1px solid #dbdbdb;border-radius:20px;text-decoration:none;font-size:13px;">Experience</a>
+    <a href="/?category=rent" style="padding:6px 16px;background:white;border:1px solid #dbdbdb;border-radius:20px;text-decoration:none;font-size:13px;">For Rent</a>
+    <a href="/?category=roommate" style="padding:6px 16px;background:white;border:1px solid #dbdbdb;border-radius:20px;text-decoration:none;font-size:13px;">Roommate</a>
+    <a href="/?category=other" style="padding:6px 16px;background:white;border:1px solid #dbdbdb;border-radius:20px;text-decoration:none;font-size:13px;">Other</a>
+</div>
+
+{% if posts %}
+    {% for post in posts %}
+    <div class="card" data-post-id="{{ post[0] }}">
+
+        <!-- Post Header -->
+        <div class="card-header">
+            <a href="/profile?user={{ post[1] }}" class="avatar">
+                {{ post[1][0]|upper }}
+            </a>
+            <a href="/profile?user={{ post[1] }}" class="username">{{ post[1] }}</a>
+            {% if post[5] %}
+            <span class="category-tag category-{{ post[5] }}">
+                {% if post[5] == 'experience' %}Experience
+                {% elif post[5] == 'rent' %}For Rent
+                {% elif post[5] == 'roommate' %}Roommate
+                {% else %}Other{% endif %}
+            </span>
+            {% endif %}
+        </div>
+
+        <!-- Post Images -->
+        {% if post[4] %}
+        <div class="post-images-grid">
+            {% for img in post[4].split(',') %}
+            <img src="{{ url_for('static', filename=img) }}" class="post-image" alt="Post image">
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="card-actions">
+            <button class="like-btn {% if post[0] in liked_posts %}liked{% endif %}"
+                    data-post-id="{{ post[0] }}"
+                    onclick="toggleLike({{ post[0] }})">
+                {% if post[0] in liked_posts %}❤️{% else %}🤍{% endif %}
+            </button>
+            <button onclick="showComments({{ post[0] }})">💬</button>
+            <span class="likes-count">{{ post[6] or 0 }} likes</span>
+        </div>
+
+        <!-- Post Content -->
+        <div class="post-title">{{ post[2] }}</div>
+        <div class="post-content">{{ post[3] }}</div>
+
+        <!-- Comments Section -->
+        <div class="comments-section" id="comments-{{ post[0] }}">
+            <div class="view-comments" onclick="showComments({{ post[0] }})">
+                View all {{ post[8] or 0 }} comments
+            </div>
+        </div>
+
+        <!-- Add Comment -->
+        {% if session.get('user') %}
+        <div class="add-comment">
+            <input type="text" placeholder="Add a comment..." id="comment-input-{{ post[0] }}"
+                   onkeypress="submitComment(event, {{ post[0] }})">
+            <button onclick="submitCommentByButton({{ post[0] }})">Post</button>
+        </div>
+        {% endif %}
+
+    </div>
+    {% endfor %}
+{% else %}
+<div class="empty-state">
+    <h3>No posts yet</h3>
+    <p>Be the first to share your rental experience!</p>
+    {% if session.get('user') %}
+    <a href="/create" class="btn-primary" style="display:inline-block;width:auto;padding:10px 24px;margin-top:20px;text-decoration:none;">Create Post</a>
+    {% else %}
+    <a href="/login" class="btn-primary" style="display:inline-block;width:auto;padding:10px 24px;margin-top:20px;text-decoration:none;">Login to Post</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<script>
+function toggleLike(postId) {
+    fetch('/like/' + postId, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'}
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            const btn = document.querySelector(`.like-btn[data-post-id="${postId}"]`);
+            btn.innerHTML = data.liked ? '❤️' : '🤍';
+            btn.classList.toggle('liked', data.liked);
+            btn.classList.add('like-anim');
+            setTimeout(() => btn.classList.remove('like-anim'), 300);
+
+            // Update likes count
+            const card = document.querySelector(`.card[data-post-id="${postId}"]`);
+            card.querySelector('.likes-count').textContent = data.likes_count + ' likes';
+        }
+    });
+}
+
+function showComments(postId) {
+    const section = document.getElementById('comments-' + postId);
+
+    fetch('/comments/' + postId)
+    .then(r => r.json())
+    .then(data => {
+        if (data.comments.length > 0) {
+            let html = data.comments.map(c => `
+                <div class="comment">
+                    <strong>${c.user}</strong> ${c.content}
+                </div>
+            `).join('');
+            section.innerHTML = html + `
+                <div class="add-comment" style="padding:10px 0;border:none;">
+                    <input type="text" placeholder="Add a comment..." id="comment-input-${postId}"
+                           onkeypress="submitComment(event, ${postId})">
+                    <button onclick="submitCommentByButton(${postId})">Post</button>
+                </div>
+            `;
+        }
+    });
+}
+
+function submitComment(event, postId) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        submitCommentByButton(postId);
+    }
+}
+
+function submitCommentByButton(postId) {
+    const input = document.getElementById('comment-input-' + postId);
+    const content = input.value.trim();
+    if (!content) return;
+
+    const formData = new FormData();
+    formData.append('content', content);
+
+    fetch('/comment/' + postId, {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            input.value = '';
+            showComments(postId);
+        }
+    });
+}
+</script>
+
+{% endblock %}

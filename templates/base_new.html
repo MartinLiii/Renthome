@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RentHome - Share Your Rental Experience</title>
+<link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: #fafafa;
+    color: #262626;
+    padding-bottom: 60px;
+}
+
+/* Top Navigation Bar - Instagram Style */
+.top-nav {
+    background: white;
+    border-bottom: 1px solid #dbdbdb;
+    padding: 8px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 600;
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-decoration: none;
+}
+
+.nav-icons {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav-icons a {
+    color: #262626;
+    font-size: 24px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.nav-icons a:hover {
+    opacity: 0.7;
+}
+
+.nav-icons .avatar-small {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #f09433, #e6683c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Bottom Tab Navigation */
+.bottom-nav {
+    background: white;
+    border-top: 1px solid #dbdbdb;
+    padding: 8px 0;
+    display: flex;
+    justify-content: space-around;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+}
+
+.bottom-nav a {
+    color: #262626;
+    font-size: 24px;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.bottom-nav a span {
+    font-size: 10px;
+}
+
+.bottom-nav a.active {
+    color: #0095f6;
+}
+
+/* Main Container */
+.container {
+    max-width: 470px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+/* Post Card */
+.card {
+    background: white;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    padding: 14px;
+    gap: 12px;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.username {
+    font-weight: 600;
+    font-size: 14px;
+    color: #262626;
+    text-decoration: none;
+}
+
+.username:hover {
+    color: #00376b;
+}
+
+.category-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: #eee;
+    color: #666;
+    margin-left: auto;
+}
+
+.category-experience { background: #e3f2fd; color: #1976d2; }
+.category-rent { background: #e8f5e9; color: #388e3c; }
+.category-roommate { background: #fff3e0; color: #f57c00; }
+
+/* Image Display */
+.post-image {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    display: block;
+}
+
+.post-images-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+}
+
+.post-images-grid .post-image {
+    aspect-ratio: 1;
+}
+
+/* Action Buttons */
+.card-actions {
+    display: flex;
+    align-items: center;
+    padding: 12px 14px;
+    gap: 16px;
+}
+
+.card-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-size: 24px;
+    color: #262626;
+    transition: transform 0.2s;
+}
+
+.card-actions button:hover {
+    transform: scale(1.1);
+}
+
+.card-actions button.liked {
+    color: #ed4956;
+}
+
+.likes-count {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* Title and Content */
+.post-title {
+    font-weight: 600;
+    font-size: 14px;
+    padding: 0 14px;
+    margin-bottom: 6px;
+}
+
+.post-content {
+    font-size: 14px;
+    color: #262626;
+    padding: 0 14px;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+/* Comments Section */
+.comments-section {
+    padding: 0 14px 14px;
+}
+
+.comments-section .comment {
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.comments-section .comment strong {
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+.view-comments {
+    color: #8e8e8e;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.add-comment {
+    display: flex;
+    padding: 14px;
+    border-top: 1px solid #efefef;
+}
+
+.add-comment input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    background: transparent;
+}
+
+.add-comment button {
+    background: none;
+    border: none;
+    color: #0095f6;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0 8px;
+}
+
+.add-comment button:disabled {
+    color: #b3d9f2;
+    cursor: default;
+}
+
+/* Form Styles */
+.form-group {
+    padding: 0 20px;
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #8e8e8e;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    background: white;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: #a8a8a8;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Buttons */
+.btn-primary {
+    width: calc(100% - 40px);
+    margin: 0 20px 20px;
+    padding: 12px;
+    background: #0095f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background: #1877f2;
+}
+
+.btn-primary:disabled {
+    background: #b3d9f2;
+    cursor: default;
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid #dbdbdb;
+    color: #262626;
+}
+
+.btn-secondary:hover {
+    background: #fafafa;
+}
+
+/* Search Box */
+.search-box {
+    padding: 10px 20px;
+    background: white;
+    border-bottom: 1px solid #dbdbdb;
+    position: sticky;
+    top: 52px;
+    z-index: 50;
+}
+
+.search-box input {
+    background: #efefef;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.search-box input:focus {
+    background: white;
+    text-align: left;
+}
+
+/* Error Message */
+.error {
+    background: #ffebee;
+    color: #c62828;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 0 20px 20px;
+    font-size: 14px;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #8e8e8e;
+}
+
+.empty-state h3 {
+    margin-bottom: 8px;
+    color: #262626;
+}
+
+/* Grid Layout */
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+}
+
+.grid-3 .post-image {
+    aspect-ratio: 1;
+}
+
+/* Profile Page */
+.profile-header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    gap: 30px;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.profile-stats {
+    display: flex;
+    gap: 30px;
+}
+
+.profile-stats div {
+    text-align: center;
+}
+
+.profile-stats strong {
+    display: block;
+    font-size: 16px;
+}
+
+.profile-stats span {
+    font-size: 14px;
+    color: #8e8e8e;
+}
+
+.profile-bio {
+    padding: 0 20px 20px;
+    font-size: 14px;
+    color: #262626;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 10px;
+    padding: 0 20px 20px;
+}
+
+.profile-actions .btn-primary {
+    margin: 0;
+    flex: 1;
+}
+
+/* Messages List */
+.message-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    gap: 12px;
+    text-decoration: none;
+    color: #262626;
+    border-bottom: 1px solid #efefef;
+}
+
+.message-item:hover {
+    background: #fafafa;
+}
+
+.message-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #f09433, #e6683c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.message-content {
+    flex: 1;
+}
+
+.message-username {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.message-preview {
+    font-size: 14px;
+    color: #8e8e8e;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.unread-badge {
+    background: #ed4956;
+    color: white;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+/* Chat Interface */
+.chat-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    background: white;
+    border-bottom: 1px solid #dbdbdb;
+    position: sticky;
+    top: 52px;
+    z-index: 50;
+}
+
+.chat-back {
+    font-size: 20px;
+    color: #262626;
+    text-decoration: none;
+    margin-right: 12px;
+}
+
+.chat-with {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.chat-messages {
+    padding: 20px;
+    min-height: calc(100vh - 180px);
+}
+
+.chat-message {
+    max-width: 70%;
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.chat-message.sent {
+    background: #0095f6;
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-message.received {
+    background: #efefef;
+    color: #262626;
+    border-bottom-left-radius: 4px;
+}
+
+.chat-message img {
+    max-width: 200px;
+    border-radius: 12px;
+    margin-top: 8px;
+}
+
+.chat-input {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    background: white;
+    border-top: 1px solid #dbdbdb;
+    gap: 12px;
+}
+
+.chat-input input {
+    flex: 1;
+    border-radius: 24px;
+    padding: 10px 16px;
+}
+
+/* Animation */
+@keyframes likeAnimation {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+.like-anim {
+    animation: likeAnimation 0.3s ease;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Top Navigation Bar -->
+<nav class="top-nav">
+    <a href="/" class="logo">RentHome</a>
+    <div class="nav-icons">
+        <a href="/" title="Home">🏠</a>
+        <a href="/search" title="Search">🔍</a>
+        {% if session.get('user') %}
+        <a href="/create" title="Create Post">➕</a>
+        <a href="/messages" title="Messages">💬</a>
+        <a href="/profile" class="avatar-small" title="Profile">
+            {{ session['user'][0]|upper }}
+        </a>
+        <a href="/logout" title="Logout">🚪</a>
+        {% else %}
+        <a href="/login">Login</a>
+        <a href="/register">Sign up</a>
+        {% endif %}
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+
+<!-- Bottom Tab Navigation -->
+{% if session.get('user') %}
+<nav class="bottom-nav">
+    <a href="/" class="{% if request.path == '/' %}active{% endif %}">
+        <span style="font-size:20px;">🏠</span><span>Home</span>
+    </a>
+    <a href="/search" class="{% if request.path == '/search' %}active{% endif %}">
+        <span style="font-size:20px;">🔍</span><span>Search</span>
+    </a>
+    <a href="/create" class="{% if request.path == '/create' %}active{% endif %}">
+        <span style="font-size:20px;">➕</span><span>Post</span>
+    </a>
+    <a href="/messages" class="{% if request.path == '/messages' %}active{% endif %}">
+        <span style="font-size:20px;">💬</span><span>Messages</span>
+    </a>
+    <a href="/profile" class="{% if request.path == '/profile' %}active{% endif %}">
+        <span style="font-size:20px;">👤</span><span>Profile</span>
+    </a>
+</nav>
+{% endif %}
+
+</body>
+</html>
