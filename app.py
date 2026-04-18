@@ -19,7 +19,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # 🧠 数据库
 # =========================
 def get_db():
-    return sqlite3.connect('data.db')
+    return sqlite3.connect('/tmp/data.db')
 
 
 def init_db():
